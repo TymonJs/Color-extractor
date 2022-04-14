@@ -1,0 +1,96 @@
+p{
+    text-align: center;
+    font-size: 1.5rem;
+    color: rgb(235, 225, 225);
+}
+#copyright{
+    /* margin-top: 50%; */
+    font-size: 1.3rem;
+    padding-top: 0.5rem;
+}
+#title{
+    margin-bottom:4rem;
+}
+.container{
+    text-align: center;
+    margin-left: 50%;
+    color: rgb(235, 225, 225);
+    /* height: 58.6rem; */
+}
+
+body {
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+.add{
+    position:fixed;
+    right: 2rem;
+    bottom: 2rem;
+
+}
+::placeholder{
+    color:white;
+}
+input{
+    caret-color:white;
+    outline:none;
+    color: white;
+}
+input:focus{
+    outline: none;
+    border: 3px hidden hidden solid hidden;
+}
+br{
+    margin: 10rem 0 ;
+}
+.text-center{
+    text-align: center;
+}
+input[type=file]::file-selector-button,button {
+    border: 2px solid #6c5ce7;
+    padding: .2em .4em;
+    border-radius: .2em;
+    background-color: transparent;
+    color: white;
+    width: 10.5rem;
+    height: 2.5rem;
+  }
+  
+input[type=file]::file-selector-button:hover,button:hover {
+    transform: scale(98%);
+  }
+.clr-container{
+    display:inline-block;
+    border-radius: 30px;
+    margin: 2rem auto;
+    overflow: hidden;
+    perspective: 1px;
+}
+.clr{
+    width:60px;
+    height:60px;
+    float: left;
+    margin: 0
+}
+.img-extract{
+    border-radius: 50px;
+    max-width: 50rem;
+    display:block;
+    margin: 0 auto;
+}
+html,body{
+    min-height: 100vh;
+  }
