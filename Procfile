@@ -1,1 +1,1 @@
-web: gunicorn main:app -i custom_php.ini
+web: gunicorn main:app
