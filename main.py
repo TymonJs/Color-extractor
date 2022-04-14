@@ -9,12 +9,9 @@ from random import randint
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png','gif',"svg"}
 
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = environ.get('secret_key')
-
-app.config["UPLOAD_FOLDER"] = "git root/git root/color-extractor/git root/color-extractor/settings.py/git root/color-extractor/static/uploads"
-# app.config['UPLOAD_FOLDER'] = './static/uploads/'
+app.config['UPLOAD_FOLDER'] = './static/uploads/'
 
 Bootstrap(app)
 
