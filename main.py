@@ -12,7 +12,6 @@ ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png','gif',"svg"}
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = environ.get('secret_key')
-
 app.config['UPLOAD_FOLDER'] = './static/uploads/'
 
 Bootstrap(app)
@@ -25,7 +24,7 @@ def home():
     for file in listdir(app.config['UPLOAD_FOLDER']):
         if file!='stop.txt':
             remove(app.config["UPLOAD_FOLDER"]+file)
-            
+
     form = ColorForm()
     if request.method == 'POST':
 
@@ -47,8 +46,6 @@ def home():
 
             file.save(path)
             clrs = colorgram.extract(path,10)
-            for clr in clrs:
-                print(clr.hsl,clr.rgb)
             return render_template('index.html', form=form, path=path,clrs=clrs)
             
         else:
