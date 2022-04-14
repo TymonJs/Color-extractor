@@ -13,7 +13,8 @@ ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png','gif',"svg"}
 app = Flask(__name__)
 app.config['SECRET_KEY'] = environ.get('secret_key')
 
-app.config['UPLOAD_FOLDER'] = './static/uploads/'
+app.config["UPLOAD_FOLDER"] = "git root/git root/color-extractor/git root/color-extractor/settings.py/git root/color-extractor/static/uploads"
+# app.config['UPLOAD_FOLDER'] = './static/uploads/'
 
 Bootstrap(app)
 
@@ -23,9 +24,7 @@ def allowed_file(filename):
 @app.route("/",methods=['GET','POST'])
 def home():
     for file in listdir(app.config['UPLOAD_FOLDER']):
-        if file!='stop.txt':
-            remove(app.config["UPLOAD_FOLDER"]+file)
-            
+        remove(app.config["UPLOAD_FOLDER"]+file)
     form = ColorForm()
     if request.method == 'POST':
 
