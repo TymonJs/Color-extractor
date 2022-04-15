@@ -15,7 +15,8 @@ __pycache__/
 
 # C extensions
 *.so
-
+color-extraction.py
+test.py
 # Distribution / packaging
 .Python
 build/

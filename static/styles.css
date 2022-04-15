@@ -74,7 +74,7 @@ input[type=file]::file-selector-button:hover,button:hover {
   }
 .clr-container{
     display:inline-block;
-    border-radius: 30px;/*30px */
+    border-radius: 30px;
     margin: 2rem auto;
     overflow: hidden;
     perspective: 1px;
@@ -99,14 +99,14 @@ html,body{
   }
 
 .clr-label{
-    border-radius: 2px;
+    border-radius: 6px;
    font-size: 0.81rem; 
    color: white;
    text-align: center;
    background-color: rgba(36, 35, 35, 0.767);
    width: 65px;
    height: 25px;
-   top: 65/2px;
+   top: 20px;
    margin: auto 0;
    visibility: hidden;
    opacity: 0;

@@ -5,6 +5,11 @@ from os import environ, mkdir,path,listdir,remove
 from werkzeug.utils import secure_filename
 import colorgram
 from random import randint
+from PIL import Image
+from numpy import array
+from time import perf_counter
+
+
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png','gif',"svg"}
 app = Flask(__name__)
@@ -16,7 +21,6 @@ Bootstrap(app)
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
 def rgb_to_hex(clrs):
     hexs = []
     for color in clrs:
@@ -25,7 +29,7 @@ def rgb_to_hex(clrs):
             val = hex(val)
             if len(val) != 4:
                 tmphex+="0"
-            tmphex+= (str(val).replace("0x",""))
+            tmphex+= (str(val).replace("0x","").upper())
         hexs.append(tmphex)
     return hexs
 
@@ -54,7 +58,8 @@ def home():
             path = app.config['UPLOAD_FOLDER'] + filename
 
             file.save(path)
-            clrs = colorgram.extract(path,10)
+
+            clrs = colorgram.extract(file,10)
             hexs = rgb_to_hex(clrs)
             return render_template('index.html', form=form, path=path,clrs=hexs)
             
@@ -64,4 +69,4 @@ def home():
     return render_template('index.html',form=form)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
