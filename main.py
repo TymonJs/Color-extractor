@@ -1,11 +1,10 @@
 from flask import Flask, flash, render_template, redirect, url_for,request
 from flask_bootstrap import Bootstrap
 from forms import ColorForm
-from os import environ,path,listdir,remove
+from os import environ, mkdir,path,listdir,remove
 from werkzeug.utils import secure_filename
 import colorgram
 from random import randint
-
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png','gif',"svg"}
 app = Flask(__name__)
@@ -17,11 +16,29 @@ Bootstrap(app)
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
+def rgb_to_hex(clrs):
+    hexs = []
+    for color in clrs:
+        tmphex = "#"
+        for val in color.rgb:
+            val = hex(val)
+            if len(val) != 4:
+                tmphex+="0"
+            tmphex+= (str(val).replace("0x",""))
+        hexs.append(tmphex)
+    return hexs
+
 @app.route("/",methods=['GET','POST'])
 def home():
-    for file in listdir(app.config['UPLOAD_FOLDER']):
-        if file != "stop.txt":
+
+    static = listdir("./static/")
+    if "uploads" not in static:
+        mkdir("./static/uploads")
+    else:
+        for file in listdir(app.config['UPLOAD_FOLDER']):
             remove(app.config["UPLOAD_FOLDER"]+file)
+
     form = ColorForm()
     if request.method == 'POST':
 
@@ -38,7 +55,8 @@ def home():
 
             file.save(path)
             clrs = colorgram.extract(path,10)
-            return render_template('index.html', form=form, path=path,clrs=clrs)
+            hexs = rgb_to_hex(clrs)
+            return render_template('index.html', form=form, path=path,clrs=hexs)
             
         else:
             flash("File not allowed")

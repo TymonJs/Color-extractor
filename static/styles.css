@@ -9,7 +9,7 @@ p{
     padding-top: 0.5rem;
 }
 #title{
-    margin-bottom:4rem;
+    margin-bottom:3rem;
 }
 .container{
     text-align: center;
@@ -74,16 +74,17 @@ input[type=file]::file-selector-button:hover,button:hover {
   }
 .clr-container{
     display:inline-block;
-    border-radius: 30px;
+    border-radius: 30px;/*30px */
     margin: 2rem auto;
     overflow: hidden;
     perspective: 1px;
+    cursor: pointer;
 }
 .clr{
-    width:60px;
-    height:60px;
+    width:65px;
+    height:65px;
     float: left;
-    margin: 0
+    margin: 0;
 }
 .img-extract{
     border-radius: 50px;
@@ -96,3 +97,23 @@ input[type=file]::file-selector-button:hover,button:hover {
 html,body{
     min-height: 100vh;
   }
+
+.clr-label{
+    border-radius: 2px;
+   font-size: 0.81rem; 
+   color: white;
+   text-align: center;
+   background-color: rgba(36, 35, 35, 0.767);
+   width: 65px;
+   height: 25px;
+   top: 65/2px;
+   margin: auto 0;
+   visibility: hidden;
+   opacity: 0;
+   position: absolute;
+   transition: opacity .3s, visibility .3s;
+}
+.clr:hover .clr-label{
+    visibility: visible;
+    opacity: 1;
+}

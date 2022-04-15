@@ -24,10 +24,12 @@
   
     {% if clrs %}
     <div class="clr-container" >
-      {% for clr in clrs %}
-      
-      <div class="clr" style="background-color:rgb({{ clr.rgb[0] }},{{ clr.rgb[1] }},{{ clr.rgb[2] }})"></div>
-      {% endfor %}
+        {% for clr in clrs %}
+        <div class="clr" style="background-color:{{clr}}">
+          <p class="font-poppins w300 clr-label text-center">{{clr}}</p>
+        </div>
+        
+        {% endfor %}   
     </div>
     {% endif %}
   </div>
