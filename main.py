@@ -1,15 +1,9 @@
 from flask import Flask, flash, render_template, redirect, url_for,request
 from flask_bootstrap import Bootstrap
 from forms import ColorForm
-from os import environ, mkdir,path,listdir,remove
+from os import environ, mkdir,listdir,remove
 from werkzeug.utils import secure_filename
 import colorgram
-from random import randint
-from PIL import Image
-from numpy import array
-from time import perf_counter
-
-
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png','gif',"svg"}
 app = Flask(__name__)
