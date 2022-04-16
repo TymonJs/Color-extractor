@@ -21,14 +21,12 @@
     <div class="card-body">
     <img class="img-extract" src="{{ path }}" >
     </div>
-  
     {% if clrs %}
     <div class="clr-container" >
         {% for clr in clrs %}
         <div class="clr" style="background-color:{{clr}}">
           <p class="font-poppins w500 clr-label text-center">{{clr}}</p>
         </div>
-        
         {% endfor %}   
     </div>
     {% endif %}
