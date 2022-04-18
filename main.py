@@ -266,8 +266,8 @@ def gifValidate():
     file = Image.open(path)
 
     frame = form.frame.data
-    if frame:
-        frame=int(frame)-1
+    if frame or frame == 0:
+        frame=int(frame)-1  
 
     if (not frame or frame < 1) and file.n_frames>1:
         frame = 1
