@@ -17,6 +17,7 @@ ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png','gif',"svg"}
 app = Flask(__name__)
 app.config['SECRET_KEY'] = environ.get('secret_key')
 app.config['UPLOAD_FOLDER'] = './static/uploads/'
+app.config['MAX_CONTENT_LENGTH'] = 30 * 1024 * 1024
 
 Bootstrap(app)
 
@@ -99,7 +100,7 @@ def home():
 
             extension = filename.split(".")[-1]
             while filename in listdir(app.config["UPLOAD_FOLDER"]):
-                filename+="_"+randint(1,1000000)
+                filename+="_"+str(randint(1,1000000))+"."+extension
             path = app.config['UPLOAD_FOLDER'] + filename
             file.save(path)
 
@@ -158,8 +159,9 @@ def gifValidate():
     frame = form.frame.data
     if frame:
         frame=int(frame)-1
-    else:
-        frame = 0
+
+    if (not frame or frame < 1) and file.n_frames>1:
+        frame = 1
     
     if frame not in range(0,file.n_frames-1):
         flash("Frame doesn't exist")
