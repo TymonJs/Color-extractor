@@ -20,20 +20,6 @@ app.config['UPLOAD_FOLDER'] = './static/uploads/'
 
 Bootstrap(app)
 
-# def foo():
-#     print("foo")
-
-# jinjaFunctions = {
-#     'foo':foo
-# }
-
-# def render(template):
-#     env = Environment(loader=FileSystemLoader("./templates/"))
-#     jinja_template = env.get_template(template)
-#     jinja_template.globals.update(jinjaFunctions)
-#     template_string = jinja_template.render()
-#     return template_string
-
 def clr_distance(clr1,clr2):
     delta_r = clr1[0] - clr2[0]
     delta_g = clr1[1] - clr2[1]
@@ -98,13 +84,6 @@ def home():
     static = listdir("./static/")
     if "uploads" not in static:
         mkdir("./static/uploads")
-    # else:
-    #     for filename in listdir(app.config['UPLOAD_FOLDER']):
-    #         # try:
-
-    #         remove(app.config["UPLOAD_FOLDER"]+filename)
-    #         # except PermissionError:
-    #         #     continue
     
     form = ColorForm()
     if request.method == 'POST':
