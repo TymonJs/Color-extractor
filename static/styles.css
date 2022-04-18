@@ -125,7 +125,7 @@ input:-webkit-autofill:active {
     margin: 0 auto;
 }
 
-.gif{
+.gif, .video{
     margin: 0 auto;
     min-width: 30rem;
     min-height: 25rem;
@@ -159,4 +159,10 @@ border-bottom: 2px solid yellow;
 border-radius: 10px;
 width: 30rem;
 margin: 0em auto 1.4rem
+}
+
+.video{
+    border: 0;
+    /* max-width: 50rem;
+    max-height: 31.25rem; */
 }

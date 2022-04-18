@@ -1,4 +1,6 @@
+from collections import Counter
 from threading import Thread
+from cv2 import VideoCapture
 from flask import Flask, flash, render_template, redirect, url_for,request,abort,after_this_request
 from flask_bootstrap import Bootstrap
 from forms import ColorForm, GifForm
@@ -8,18 +10,26 @@ from PIL import Image
 from numpy import array, uint8
 from time import sleep
 from random import randint
+import cv2
+
 PIXEL_DISTANCE = 25
 COLOR_DISTANCE = 100
 BW_DISTANCE = 60
 
-ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png','gif',"svg"}
+VIDEO_EXTENSIONS = {'mp4','mkv','mpeg','webm','mov'}
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png','gif'} | VIDEO_EXTENSIONS
+
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = environ.get('secret_key')
 app.config['UPLOAD_FOLDER'] = './static/uploads/'
-app.config['MAX_CONTENT_LENGTH'] = 30 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 
 Bootstrap(app)
+static = listdir("./static/")
+if "uploads" not in static:
+    mkdir("./static/uploads")
 
 def clr_distance(clr1,clr2):
     delta_r = clr1[0] - clr2[0]
@@ -30,7 +40,10 @@ def clr_distance(clr1,clr2):
     return distance
 
 def get_pixels(path:str,amount=10):
-    img = Image.open(path)
+    try:
+        img = Image.open(path)
+    except FileNotFoundError:
+        return redirect(url_for('home'))
     index = 1
     dict = {}
     for row in array(img):
@@ -81,10 +94,6 @@ def rgb_to_hex(clrs):
 
 @app.route("/",methods=['GET','POST'])
 def home():
-
-    static = listdir("./static/")
-    if "uploads" not in static:
-        mkdir("./static/uploads")
     
     form = ColorForm()
     if request.method == 'POST':
@@ -102,21 +111,20 @@ def home():
             while filename in listdir(app.config["UPLOAD_FOLDER"]):
                 filename+="_"+str(randint(1,1000000))+"."+extension
             path = app.config['UPLOAD_FOLDER'] + filename
-            file.save(path)
 
-            if filename.endswith(".gif") and Image.open(file).n_frames > 1:
-                return redirect(url_for('gif',filename=filename))  
+            if extension not in VIDEO_EXTENSIONS:
+                file.save(path)
+                if filename.endswith(".gif") and Image.open(file).n_frames > 1:
+                    return redirect(url_for('gif',filename=filename))
+            else:
+                with open(app.config["UPLOAD_FOLDER"] + filename,'wb') as f:
+                    f.write(file.stream.read())
+
+                return redirect(url_for('video',filename=filename))
 
             hexs = get_pixels(path)
 
-            @after_this_request
-            def wrapper(response):
-
-                @response.call_on_close
-                def afterwork():
-
-                    removeUpload(path)
-                return response
+            afterReturnRemove(path)
 
             return render_template('index.html', path=path,clrs=hexs)
             
@@ -124,6 +132,113 @@ def home():
             flash("File not allowed")
             return redirect(url_for('home'))
     return render_template('index.html',form=form)
+
+@app.route('/video',methods=['GET','POST'])
+def video():
+
+    filename = request.args.get("filename")
+    form = GifForm()
+
+    if not filename:
+        abort(403)
+    path = app.config['UPLOAD_FOLDER'] + filename
+
+    vid = cv2.VideoCapture(path)
+    fps = vid.get(cv2.CAP_PROP_FPS) 
+    frame_count = int(vid.get(cv2.CAP_PROP_FRAME_COUNT))
+    try:
+        seconds_total = frame_count//fps
+        minutes = int(seconds_total/60)
+        seconds = str(int(seconds_total-minutes*60))
+    except:
+        try:
+            remove(path)
+        except FileNotFoundError:
+            pass
+        finally:
+            return redirect(url_for('home'))
+    
+    if len(seconds) == 1:
+        seconds = "0"+seconds
+
+    duration_str = f"{minutes}:{seconds}"
+
+    Thread(target=afterReturnRemove(path,60)).start()
+    return render_template('frame-select.html',form=form,dur=duration_str,path=path)
+
+@app.route('/video-validate',methods=['POST'])
+def videoValidate():
+    form = GifForm()
+    path = request.args.get("path")
+    filename = path.replace(app.config['UPLOAD_FOLDER'],'')
+    frame:str = form.frame.data
+
+    vid = cv2.VideoCapture(path)
+    fps = vid.get(cv2.CAP_PROP_FPS) 
+    frame_count = int(vid.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    if not frame:
+        frame = 0
+
+    else:
+        for _ in range(1):
+            if ":" in frame:
+                minute,second = frame.split(":")
+                
+
+            elif ":" not in frame:
+                frame = frame.strip(" ")
+                spaces = Counter(frame)[" "]
+                if spaces == 1:
+                    minute,second = frame.split(" ")
+                elif spaces == 0:
+                    frame = int(frame)
+                    if frame>=0:
+                        continue
+                    else:
+                        flash("Frame doesn't exist")
+                        return redirect(url_for('video',filename=filename))
+
+                else:
+                    flash("Frame doesn't exist")
+                    return redirect(url_for('video',filename=filename))
+
+            frame = int((int(minute)*60+int(second))*fps)
+
+    if frame>frame_count:
+        flash("Frame doesn't exist")
+        return redirect(url_for('video',filename=path.replace(app.config['UPLOAD_FOLDER'],'')))
+
+    vid.set(cv2.CAP_PROP_POS_FRAMES, frame)
+    success,frame = vid.read()
+    if not success:
+        flash("Something Went Wrong. Try Again")
+        return redirect(url_for('home'))
+
+    name = path.rsplit('.',1)[0] + '.png'
+    cv2.imwrite(name, frame)
+
+    vid.release()
+
+    if filename in listdir(app.config['UPLOAD_FOLDER']):
+        remove(path)
+
+    hexs = get_pixels(name)
+
+    afterReturnRemove(name)
+    return render_template('index.html',path=name,clrs=hexs)
+
+
+def afterReturnRemove(path,time=10):
+    @after_this_request
+    def wrapper(response):
+        @response.call_on_close
+        def afterwork():
+            try:
+                removeUpload(path,time)
+            except:
+                pass
+        return response
 
 @app.route("/gif",methods=["GET",'POST'])
 def gif():
@@ -136,18 +251,8 @@ def gif():
     path = app.config['UPLOAD_FOLDER']+filename
     file = Image.open(path)
 
-    def task(time):
-        @after_this_request
-        def wrapper(response):
-            @response.call_on_close
-            def afterwork():
-                try:
-                    removeUpload(path,time)
-                except:
-                    pass
-            return response
 
-    Thread(target=task(30)).start()
+    Thread(target=afterReturnRemove(path,60)).start()
     return render_template('frame-select.html',form=form,file=file,path=path)
 
 @app.route('/gif-validate',methods=["POST"])
@@ -193,23 +298,19 @@ def gifColors():
     if path:
         hexs = get_pixels(path)
         
-        @after_this_request
-        def wrapper(response):
-
-            @response.call_on_close
-            def afterwork():
-                removeUpload(path)
-            return response
-
-        return render_template('index.html',path=path,clrs=hexs)
+        afterReturnRemove(path)
+        try:
+            return render_template('index.html',path=path,clrs=hexs)
+        except TypeError:
+            return redirect(url_for('home'))
             
     else:
         abort(403)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
 
-#unique files with ids 
+#iframe widht and height depenging on video 'shape'
 # Jeżeli poptrzedni pixel jest bardzo podobny do obecnego to nie sprawdzaj go (continue) 
 
 ### W przyszłości z js - gdy wybierasz klatke do gifa przesuwaj suwakiem żeby wybrać klatkę (gif się synchronicznie zmienia)
