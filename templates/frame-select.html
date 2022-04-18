@@ -1,0 +1,57 @@
+{% include 'header.html' %}
+<div class="container" style="height: 30rem;">
+    <h1 style="font-size: 6rem;padding-bottom: 0.3rem;" class="font-poppins w100" id="todo">Select GIF Frame</h1>
+    <div class="card border-light bg-transparent" style="height: 38rem;border-radius: 30px;">
+        <div class="card-body">
+          
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+              <h2 class="card-title font-poppins w100 warning" >{{messages[0]}}</h2>
+              {% else %}
+              <h2 class="card-title font-poppins w200" style="margin-bottom: 0.7rem">Form</h2>
+              {% endif %}
+            {% endwith %}          
+            {% set dur = file.n_frames - 1 %}
+          <form action="{{ url_for('gifValidate',path=path) }}" method="post" novalidate style="height:92%">
+              <div style="display:grid;place-items: center">
+  
+                <div>
+                <div class="gif-container"  >
+                  <img class="gif" src="{{ path }}" >
+                  <span style="background-color: rgba(36, 35, 35, 0.767);position: relative;height: 2rem;bottom:1.5rem;
+                  font-size: 1.6rem;padding: 0 2rem;border-radius: 50px"
+                  class="font-poppins w500">
+                    {{dur}} frames
+                  </span>
+                </div>
+                
+                </div>
+                
+                <input class="card border-light bg-transparent font-poppins w200"
+                type="text" name="frame" placeholder="Select a frame (1 - {{dur}})" id="frame"
+                style="border: 0; border-bottom: solid 1px; width: 18rem;height: 3rem;font-size: 1.5rem;position: relative;bottom:0rem;text-align: center;">
+              </div>
+            
+            
+        
+        </div>
+    </div>
+    <div class="row" style="margin-top: 2rem;">
+      <div class="col-4">
+      </div>
+      <div class="col-4">
+          <button class="btn btn-warning btn-block font-poppins w700"
+          style="margin-top: 1rem;border-radius: 10px;font-size: 1.2rem;position: relative;bottom: 1.75rem;" type="submit">Select</button>
+      </div>
+      <div class="col-4">
+      </div>
+  </div>
+    </form>
+        <p id="copyright" class="font-poppins w200 footer fixed-bottom" >Copyright &copy Tymon Jasiński 2022</p>
+
+    </body>
+
+</html>
+    
+
+

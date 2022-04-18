@@ -1,16 +1,16 @@
-from flask import Flask, flash, render_template, redirect, url_for,request
+from threading import Thread
+from flask import Flask, flash, render_template, redirect, url_for,request,abort,after_this_request
 from flask_bootstrap import Bootstrap
-from forms import ColorForm
+from forms import ColorForm, GifForm
 from os import environ, mkdir,listdir,remove
 from werkzeug.utils import secure_filename
-from random import randint
 from PIL import Image
 from numpy import array, uint8
-from time import perf_counter
-
+from time import sleep
+from random import randint
 PIXEL_DISTANCE = 25
 COLOR_DISTANCE = 100
-BW_DISTANCE = 50
+BW_DISTANCE = 60
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png','gif',"svg"}
 
@@ -20,6 +20,20 @@ app.config['UPLOAD_FOLDER'] = './static/uploads/'
 
 Bootstrap(app)
 
+# def foo():
+#     print("foo")
+
+# jinjaFunctions = {
+#     'foo':foo
+# }
+
+# def render(template):
+#     env = Environment(loader=FileSystemLoader("./templates/"))
+#     jinja_template = env.get_template(template)
+#     jinja_template.globals.update(jinjaFunctions)
+#     template_string = jinja_template.render()
+#     return template_string
+
 def clr_distance(clr1,clr2):
     delta_r = clr1[0] - clr2[0]
     delta_g = clr1[1] - clr2[1]
@@ -28,10 +42,8 @@ def clr_distance(clr1,clr2):
     distance = ((2+red_mean/256)*(delta_r**2) + 4*(delta_g**2) + (2 + (255-red_mean)/256)* (delta_b**2) )**(1/2)
     return distance
 
-def get_pixels(path:str,amount=10,frame = 0):
+def get_pixels(path:str,amount=10):
     img = Image.open(path)
-    if path.endswith(".gif"):
-        img.seek(frame)
     index = 1
     dict = {}
     for row in array(img):
@@ -39,6 +51,7 @@ def get_pixels(path:str,amount=10,frame = 0):
             if index % PIXEL_DISTANCE == 0:
 
                 if type(value) == uint8:
+                    value = int(value)
                     value = (value,value,value)
                
                 else:
@@ -46,8 +59,8 @@ def get_pixels(path:str,amount=10,frame = 0):
 
                 if value not in dict:
                         if index !=1:
-                            if clr_distance(value,(0,0,0)) < BW_DISTANCE or clr_distance(value,(255,255,255)) < BW_DISTANCE:
-                                continue
+                            # if clr_distance(value,(0,0,0)) < BW_DISTANCE or clr_distance(value,(255,255,255)) < BW_DISTANCE:
+                            #     continue
                             for element in dict:
                                 if clr_distance(value,element) < COLOR_DISTANCE:
                                     break
@@ -85,10 +98,14 @@ def home():
     static = listdir("./static/")
     if "uploads" not in static:
         mkdir("./static/uploads")
-    else:
-        for file in listdir(app.config['UPLOAD_FOLDER']):
-            remove(app.config["UPLOAD_FOLDER"]+file)
+    # else:
+    #     for filename in listdir(app.config['UPLOAD_FOLDER']):
+    #         # try:
 
+    #         remove(app.config["UPLOAD_FOLDER"]+filename)
+    #         # except PermissionError:
+    #         #     continue
+    
     form = ColorForm()
     if request.method == 'POST':
 
@@ -101,21 +118,117 @@ def home():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
 
+            extension = filename.split(".")[-1]
+            while filename in listdir(app.config["UPLOAD_FOLDER"]):
+                filename+="_"+randint(1,1000000)
             path = app.config['UPLOAD_FOLDER'] + filename
-
             file.save(path)
-            
+
+            if filename.endswith(".gif") and Image.open(file).n_frames > 1:
+                return redirect(url_for('gif',filename=filename))  
+
             hexs = get_pixels(path)
-            
-            return render_template('index.html', form=form, path=path,clrs=hexs)
+
+            @after_this_request
+            def wrapper(response):
+
+                @response.call_on_close
+                def afterwork():
+
+                    removeUpload(path)
+                return response
+
+            return render_template('index.html', path=path,clrs=hexs)
             
         else:
             flash("File not allowed")
             return redirect(url_for('home'))
     return render_template('index.html',form=form)
 
-if __name__ == "__main__":
-    app.run(debug=False)
+@app.route("/gif",methods=["GET",'POST'])
+def gif():
+    filename = request.args.get("filename")
+    form = GifForm()
 
-# jeżeli gif to spytaj którą klatke wybrać (default zero)
+    if not filename:
+        abort(403)
+
+    path = app.config['UPLOAD_FOLDER']+filename
+    file = Image.open(path)
+
+    def task(time):
+        @after_this_request
+        def wrapper(response):
+            @response.call_on_close
+            def afterwork():
+                try:
+                    removeUpload(path,time)
+                except:
+                    pass
+            return response
+
+    Thread(target=task(30)).start()
+    return render_template('frame-select.html',form=form,file=file,path=path)
+
+@app.route('/gif-validate',methods=["POST"])
+def gifValidate():
+    form = GifForm()
+    path = request.args.get("path")
+    file = Image.open(path)
+
+    frame = form.frame.data
+    if frame:
+        frame=int(frame)-1
+    else:
+        frame = 0
+    
+    if frame not in range(0,file.n_frames-1):
+        flash("Frame doesn't exist")
+        return redirect(url_for('gif',filename=path.replace(app.config['UPLOAD_FOLDER'],'')))
+    file.seek(frame)
+    pathPng = path.rstrip("gif") + 'png'
+    file.save(pathPng)
+    file.close()
+    remove(path)
+    
+    return redirect(url_for('gifColors',path=pathPng))
+
+
+
+# @app.context_processor
+# def utility_processor():
+#     def removeUpload(path):
+#         sleep(5)
+#         remove(path)
+#     return dict(removeUpload=removeUpload)
+
+def removeUpload(path,time=5):
+    sleep(time)
+    remove(path)
+
+@app.route('/gif-colors',methods=["GET"])
+def gifColors():
+    path = request.args.get("path")
+    if path:
+        hexs = get_pixels(path)
+        
+        @after_this_request
+        def wrapper(response):
+
+            @response.call_on_close
+            def afterwork():
+                removeUpload(path)
+            return response
+
+        return render_template('index.html',path=path,clrs=hexs)
+            
+    else:
+        abort(403)
+
+if __name__ == "__main__":
+    app.run()
+
+#unique files with ids 
 # Jeżeli poptrzedni pixel jest bardzo podobny do obecnego to nie sprawdzaj go (continue) 
+
+### W przyszłości z js - gdy wybierasz klatke do gifa przesuwaj suwakiem żeby wybrać klatkę (gif się synchronicznie zmienia)
