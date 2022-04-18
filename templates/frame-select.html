@@ -32,7 +32,13 @@
                   </span>
 
                   {% else %}
-                  <iframe class="video" src="{{ path }}" width="800" height="600"></iframe>
+                  <iframe class="video" src="{{ path }}"
+                  {% if (shape['width']<= shape['max-w']) and (shape['height'] <= shape['max-h']) %}
+                   width="{{shape['width']}}" height="{{shape['width']}}">
+                  {% else %}
+                  width="{{shape['max-w']}}" height="{{shape['max-h']}}">
+                  {% endif %}
+                  </iframe>
                   {% endif %}
                   
                 </div>

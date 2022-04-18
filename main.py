@@ -146,6 +146,7 @@ def video():
     vid = cv2.VideoCapture(path)
     fps = vid.get(cv2.CAP_PROP_FPS) 
     frame_count = int(vid.get(cv2.CAP_PROP_FRAME_COUNT))
+
     try:
         seconds_total = frame_count//fps
         minutes = int(seconds_total/60)
@@ -163,8 +164,10 @@ def video():
 
     duration_str = f"{minutes}:{seconds}"
 
+    shape = {"width":vid.get(cv2.CAP_PROP_FRAME_WIDTH),"height":vid.get(cv2.CAP_PROP_FRAME_HEIGHT),'max-w':800,'max-h':600}
+
     Thread(target=afterReturnRemove(path,60)).start()
-    return render_template('frame-select.html',form=form,dur=duration_str,path=path)
+    return render_template('frame-select.html',form=form,dur=duration_str,path=path,shape=shape)
 
 @app.route('/video-validate',methods=['POST'])
 def videoValidate():
@@ -194,6 +197,7 @@ def videoValidate():
                 elif spaces == 0:
                     frame = int(frame)
                     if frame>=0:
+                        frame = frame * fps
                         continue
                     else:
                         flash("Frame doesn't exist")
@@ -310,7 +314,6 @@ def gifColors():
 if __name__ == "__main__":
     app.run(debug=True)
 
-#iframe widht and height depenging on video 'shape'
 # Jeżeli poptrzedni pixel jest bardzo podobny do obecnego to nie sprawdzaj go (continue) 
 
 ### W przyszłości z js - gdy wybierasz klatke do gifa przesuwaj suwakiem żeby wybrać klatkę (gif się synchronicznie zmienia)
