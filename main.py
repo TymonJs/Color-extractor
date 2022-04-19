@@ -22,11 +22,11 @@ MAX_FILE_SIZE = 50 #MB
 VIDEO_EXTENSIONS = {'mp4'}
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png','gif'} | VIDEO_EXTENSIONS
 
-
+UPLOAD_FOLDER = './static/uploads/'
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = environ.get('secret_key')
-app.config['UPLOAD_FOLDER'] = './static/uploads/'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = maxsize * 1024 * 1024
 
 Bootstrap(app)
@@ -142,7 +142,7 @@ def home():
             extension = filename.split(".")[-1]
             while filename in listdir(app.config["UPLOAD_FOLDER"]):
                 filename=filename.rsplit('.',1)[0] +"_"+str(randint(1,1000000))+"."+extension
-            path = app.config['UPLOAD_FOLDER'] + filename
+            path = UPLOAD_FOLDER + filename
 
             if extension not in VIDEO_EXTENSIONS:
                 file.save(path)
@@ -173,7 +173,7 @@ def video():
 
     if not filename:
         abort(403)
-    path = app.config['UPLOAD_FOLDER'] + filename
+    path = UPLOAD_FOLDER + filename
 
     vid = cv2.VideoCapture(path)
     fps = vid.get(cv2.CAP_PROP_FPS) 
@@ -211,7 +211,7 @@ def video():
 def videoValidate():
     form = GifForm()
     path = request.args.get("path")
-    filename = path.replace(app.config['UPLOAD_FOLDER'],'')
+    filename = path.replace(UPLOAD_FOLDER,'')
     frame:str = form.frame.data
 
     vid = cv2.VideoCapture(path)
@@ -249,7 +249,7 @@ def videoValidate():
 
     if frame>frame_count:
         flash("Frame doesn't exist")
-        return redirect(url_for('video',filename=path.replace(app.config['UPLOAD_FOLDER'],'')))
+        return redirect(url_for('video',filename=path.replace(UPLOAD_FOLDER,'')))
 
     vid.set(cv2.CAP_PROP_POS_FRAMES, frame)
     success,frame = vid.read()
@@ -264,7 +264,7 @@ def videoValidate():
     cv2.destroyAllWindows()
 
 
-    # if filename in listdir(app.config['UPLOAD_FOLDER']):
+    # if filename in listdir(UPLOAD_FOLDER):
     #     remove(path)
 
     hexs = get_pixels(name)
@@ -293,7 +293,7 @@ def gif():
     if not filename:
         abort(403)
 
-    path = app.config['UPLOAD_FOLDER']+filename
+    path = UPLOAD_FOLDER+filename
     file = Image.open(path)
 
 
@@ -315,7 +315,7 @@ def gifValidate():
     
     if frame not in range(0,file.n_frames-1):
         flash("Frame doesn't exist")
-        return redirect(url_for('gif',filename=path.replace(app.config['UPLOAD_FOLDER'],'')))
+        return redirect(url_for('gif',filename=path.replace(UPLOAD_FOLDER,'')))
     file.seek(frame)
     pathPng = path.rstrip("gif") + 'png'
     file.save(pathPng)
