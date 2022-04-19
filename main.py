@@ -1,7 +1,7 @@
 from collections import Counter
 from threading import Thread
 from cv2 import VideoCapture
-from flask import Flask, flash, render_template, redirect, url_for,request,abort,after_this_request
+from flask import Flask, flash, render_template, redirect, url_for,request,abort,after_this_request,jsonify
 from flask_bootstrap import Bootstrap
 from forms import ColorForm, GifForm
 from os import environ, mkdir,listdir,remove
@@ -16,7 +16,7 @@ PIXEL_DISTANCE = 25
 COLOR_DISTANCE = 100
 BW_DISTANCE = 60
 
-VIDEO_EXTENSIONS = {'mp4','mkv','mpeg','webm','mov'}
+VIDEO_EXTENSIONS = {'mp4'}
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png','gif'} | VIDEO_EXTENSIONS
 
 
@@ -92,6 +92,35 @@ def rgb_to_hex(clrs):
         hexCode+= (str(val).replace("0x","").upper())
     return hexCode
 
+@app.errorhandler(413)
+def largefile_error(e):
+    flash('File too large. Max file size is 50MB')
+    return redirect(url_for('home'))
+    # return jsonify(
+    # {
+    #     "Error":str(e),
+    #     "Click to redirect":url_for('home')
+    # }
+    # ),413
+
+@app.errorhandler(403)
+def user_not_allowed(e):
+    return jsonify(
+        {
+            "Error":str(e),
+            "Click to redirect":url_for('home')
+        }
+    ),403
+
+@app.errorhandler(405)
+def method_not_allowed(e):
+    return jsonify(
+        {
+            "Error":str(e),
+            "Click to redirect":url_for('home')
+        }
+    ),405
+
 @app.route("/",methods=['GET','POST'])
 def home():
     
@@ -109,7 +138,7 @@ def home():
 
             extension = filename.split(".")[-1]
             while filename in listdir(app.config["UPLOAD_FOLDER"]):
-                filename+="_"+str(randint(1,1000000))+"."+extension
+                filename=filename.rsplit('.',1)[0] +"_"+str(randint(1,1000000))+"."+extension
             path = app.config['UPLOAD_FOLDER'] + filename
 
             if extension not in VIDEO_EXTENSIONS:
@@ -157,6 +186,7 @@ def video():
         except FileNotFoundError:
             pass
         finally:
+            flash("Session expired")
             return redirect(url_for('home'))
     
     if len(seconds) == 1:
@@ -164,7 +194,12 @@ def video():
 
     duration_str = f"{minutes}:{seconds}"
 
-    shape = {"width":vid.get(cv2.CAP_PROP_FRAME_WIDTH),"height":vid.get(cv2.CAP_PROP_FRAME_HEIGHT),'max-w':800,'max-h':600}
+    shape = {
+        "width":vid.get(cv2.CAP_PROP_FRAME_WIDTH),
+        "height":vid.get(cv2.CAP_PROP_FRAME_HEIGHT),
+        'max-w':800,
+        'max-h':600
+    }
 
     Thread(target=afterReturnRemove(path,60)).start()
     return render_template('frame-select.html',form=form,dur=duration_str,path=path,shape=shape)
@@ -216,20 +251,23 @@ def videoValidate():
     vid.set(cv2.CAP_PROP_POS_FRAMES, frame)
     success,frame = vid.read()
     if not success:
-        flash("Something Went Wrong. Try Again")
+        flash("Session expired")
         return redirect(url_for('home'))
 
     name = path.rsplit('.',1)[0] + '.png'
     cv2.imwrite(name, frame)
 
     vid.release()
+    cv2.destroyAllWindows()
 
-    if filename in listdir(app.config['UPLOAD_FOLDER']):
-        remove(path)
+
+    # if filename in listdir(app.config['UPLOAD_FOLDER']):
+    #     remove(path)
 
     hexs = get_pixels(name)
 
     afterReturnRemove(name)
+    afterReturnRemove(path)
     return render_template('index.html',path=name,clrs=hexs)
 
 
@@ -306,7 +344,7 @@ def gifColors():
         try:
             return render_template('index.html',path=path,clrs=hexs)
         except TypeError:
-            return redirect(url_for('home'))
+            abort(403)
             
     else:
         abort(403)
@@ -315,5 +353,7 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 # Jeżeli poptrzedni pixel jest bardzo podobny do obecnego to nie sprawdzaj go (continue) 
+# form range 
+
 
 ### W przyszłości z js - gdy wybierasz klatke do gifa przesuwaj suwakiem żeby wybrać klatkę (gif się synchronicznie zmienia)

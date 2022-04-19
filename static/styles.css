@@ -116,6 +116,7 @@ input:-webkit-autofill:active {
    transition: opacity .3s, visibility .3s;
    
 }
+
 .img-extract{
     border-radius: 50px;
     max-width: 50rem;
@@ -166,3 +167,4 @@ margin: 0em auto 1.4rem
     /* max-width: 50rem;
     max-height: 31.25rem; */
 }
+  
