@@ -189,7 +189,7 @@ def video():
         except FileNotFoundError:
             pass
         finally:
-            flash("Session expired")
+            flash("Session has expired")
             return redirect(url_for('home'))
     
     if len(seconds) == 1:
@@ -204,7 +204,7 @@ def video():
         'max-h':600
     }
 
-    Thread(target=afterReturnRemove(path,60)).start()
+    Thread(target=afterReturnRemove(path,120)).start()
     return render_template('frame-select.html',form=form,dur=duration_str,path=path,shape=shape)
 
 @app.route('/video-validate',methods=['POST'])
@@ -254,7 +254,7 @@ def videoValidate():
     vid.set(cv2.CAP_PROP_POS_FRAMES, frame)
     success,frame = vid.read()
     if not success:
-        flash("Session expired")
+        flash("Session has expired")
         return redirect(url_for('home'))
 
     name = path.rsplit('.',1)[0] + '.png'
@@ -294,10 +294,13 @@ def gif():
         abort(403)
 
     path = UPLOAD_FOLDER+filename
-    file = Image.open(path)
 
-
-    Thread(target=afterReturnRemove(path,60)).start()
+    try:
+        file = Image.open(path)
+    except FileNotFoundError:
+        flash("Session has expired")
+        return redirect(url_for('home'))
+    Thread(target=afterReturnRemove(path,120)).start()
     return render_template('frame-select.html',form=form,file=file,path=path)
 
 @app.route('/gif-validate',methods=["POST"])
@@ -307,14 +310,19 @@ def gifValidate():
     file = Image.open(path)
 
     frame = form.frame.data
+
     if frame or frame == 0:
-        frame=int(frame)-1  
+        try:
+            frame=int(frame)-1  
+        except ValueError:
+            frame = 1
 
     if (not frame or frame < 1) and file.n_frames>1:
         frame = 1
     
     if frame not in range(0,file.n_frames-1):
         flash("Frame doesn't exist")
+
         return redirect(url_for('gif',filename=path.replace(UPLOAD_FOLDER,'')))
     file.seek(frame)
     pathPng = path.rstrip("gif") + 'png'
@@ -355,8 +363,3 @@ def gifColors():
 if __name__ == "__main__":
     app.run(debug=True)
 
-# Jeżeli poptrzedni pixel jest bardzo podobny do obecnego to nie sprawdzaj go (continue) 
-# form range 
-
-
-### W przyszłości z js - gdy wybierasz klatke do gifa przesuwaj suwakiem żeby wybrać klatkę (gif się synchronicznie zmienia)

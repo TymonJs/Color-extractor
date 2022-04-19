@@ -1,7 +1,7 @@
 {% include 'header.html' %}
 <div class="container" style="height: 30rem;">
-    <h1 style="font-size: 6rem;padding-bottom: 0.3rem;" class="font-poppins w100" id="todo">Select Frame</h1>
-    <div class="card border-light bg-transparent" style="height: 38rem;border-radius: 30px;">
+    <h1 style="font-size: 5.5rem;padding-bottom: 0.3rem;" class="font-poppins w100" id="todo">Select Frame</h1>
+    <div class="card border-light bg-transparent" style="height: 39rem;border-radius: 30px;">
         <div class="card-body">
           
             {% with messages = get_flashed_messages() %}
@@ -44,11 +44,40 @@
                 </div>
                 
                 </div>
+
+                {% if file %}
                 
+                <label for="customRange2" class="form-label font-poppins w300" 
+                style="font-size: 1.7rem;margin-bottom: 0;position: relative;" >
+                Select a frame
+                </label>
+                <div class="row">
+                  <div class="col">
+                  
+                  </div>
+                  <div class="col">
+                    <input type="range" id="form-range" class="form-range" min="1" max="{{dur}}" oninput="updateTextInput(this.value);"
+                    style="width: 30rem" value="1">
+                  </div>
+                  <br>
+                  <div class="col">
+
+                    <input id="range-label" class="range-label font-poppins w300" value="1" id="frame" name="frame"
+                    oninput="updateRange(this); keepRange(this.value,{{dur}});"
+                    style="background:transparent;border: 0;border-bottom: 1px solid white;width: 4rem;text-align: center;" >
+                  </input>
+
+                  </div>
+                </div>
+                
+
+                
+                {% else %}
                 <input class="card border-light bg-transparent font-poppins w200"
                 type="text" name="frame" placeholder="Select a {% if file %}frame (1 - {{dur}}){% else %}Moment (0:00 - {{dur}}){% endif %}" id="frame"
                 style="border: 0; border-bottom: solid 1px; width: 25rem;height: 3rem;font-size: 1.5rem;position: relative;bottom:0rem;text-align: center;
                 {% if not file%} top:1.5rem {% endif %}">
+                {% endif %}
               </div>
             
             
@@ -60,7 +89,7 @@
       </div>
       <div class="col-4">
           <button class="btn btn-warning btn-block font-poppins w700"
-          style="margin-top: 1rem;border-radius: 10px;font-size: 1.2rem;position: relative;bottom: 1.75rem;" type="submit">Select</button>
+          style="margin-top: 0.6rem;border-radius: 10px;font-size: 1.2rem;position: relative;bottom: 1.75rem;" type="submit">Select</button>
       </div>
       <div class="col-4">
       </div>
