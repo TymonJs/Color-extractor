@@ -27,7 +27,7 @@ UPLOAD_FOLDER = './static/uploads/'
 app = Flask(__name__)
 app.config['SECRET_KEY'] = environ.get('secret_key')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = maxsize * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE * 1024 * 1024
 
 Bootstrap(app)
 static = listdir("./static/")
