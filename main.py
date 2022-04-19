@@ -1,4 +1,5 @@
 from collections import Counter
+from sys import maxsize
 from threading import Thread
 from cv2 import VideoCapture
 from flask import Flask, flash, render_template, redirect, url_for,request,abort,after_this_request,jsonify
@@ -16,6 +17,8 @@ PIXEL_DISTANCE = 25
 COLOR_DISTANCE = 100
 BW_DISTANCE = 60
 
+MAX_FILE_SIZE = 50 #MB
+
 VIDEO_EXTENSIONS = {'mp4'}
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png','gif'} | VIDEO_EXTENSIONS
 
@@ -24,7 +27,7 @@ ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png','gif'} | VIDEO_EXTENSIONS
 app = Flask(__name__)
 app.config['SECRET_KEY'] = environ.get('secret_key')
 app.config['UPLOAD_FOLDER'] = './static/uploads/'
-app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = maxsize * 1024 * 1024
 
 Bootstrap(app)
 static = listdir("./static/")
@@ -94,7 +97,7 @@ def rgb_to_hex(clrs):
 
 @app.errorhandler(413)
 def largefile_error(e):
-    flash('File too large. Max file size is 50MB')
+    flash(F'File too large. Max file size is {MAX_FILE_SIZE}MB')
     return redirect(url_for('home'))
     # return jsonify(
     # {
