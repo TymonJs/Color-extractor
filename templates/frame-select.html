@@ -1,7 +1,8 @@
 {% include 'header.html' %}
-<div class="container" style="height: 30rem;">
-    <h1 style="font-size: 5.5rem;padding-bottom: 0.3rem;" class="font-poppins w100" id="todo">Select Frame</h1>
-    <div class="card border-light bg-transparent" style="height: 39rem;border-radius: 30px;">
+<div class="container" style="height: 30rem;zoom: 1.1;">
+    <h1 style="font-size: 5rem;padding-bottom: 0.3rem;" class="font-poppins w100" id="todo">Select Frame</h1>
+    <div class="card border-light bg-transparent" style="object-fit: contain;border-radius: 30px;margin: 0 auto;
+    {% if file %} width: fit-content {% else %} height:37rem;zoom:1.1{%endif%}">
         <div class="card-body">
           
             {% with messages = get_flashed_messages() %}
@@ -12,19 +13,34 @@
               {% endif %}
             {% endwith %}  
             {% if file %}        
-              {% set dur = file.n_frames - 1 %}
+              {% set dur = dur %}
             {% endif %}
 
           <form action="{% if file %}{{ url_for('gifValidate',path=path) }} {% else %}
           {{url_for('videoValidate',path=path)}}
           {% endif %}" 
           method="post" novalidate style="height:92%">
-
+          
               <div style="display:grid;place-items: center">
                 <div>
                 <div class="gif-container"  >
                   {% if file %}
-                  <img class="gif" src="{{ path }}" >
+                  
+              <!-- object-fit: contain -->
+                    <div class="gif" id="gif" 
+                    style="background-image: url('{{path}}.jpg'); width: {{sizes['w'] | safe}}px;height: {{sizes['h'] | safe}}px;object-fit:contain">
+                  </div>
+                  
+
+
+                  <script type="text/javascript">
+                    var proportion = 430/{{sizes['h']}};
+                    
+                    document.getElementById('gif').style.zoom = proportion;
+                    document.getElementById('gif').style.backgroundPosition="0px 0px";
+                    document.getElementById('gif').style.backgroundImage='url({{path}})';
+                  </script>
+
                   <span style="background-color: rgba(36, 35, 35, 0.767);position: relative;height: 2rem;bottom:1.5rem;
                   font-size: 1.6rem;padding: 0 2rem;border-radius: 50px"
                   class="font-poppins w500">
@@ -46,24 +62,24 @@
                 </div>
 
                 {% if file %}
-                
-                <label for="customRange2" class="form-label font-poppins w300" 
+              
+                <label class="form-label font-poppins w300" 
                 style="font-size: 1.7rem;margin-bottom: 0;position: relative;" >
                 Select a frame
                 </label>
-                <div class="row">
+                <div class="row" >
                   <div class="col">
                   
                   </div>
                   <div class="col">
-                    <input type="range" id="form-range" class="form-range" min="1" max="{{dur}}" oninput="updateTextInput(this.value);"
+                    <input type="range" id="form-range" class="form-range" min="1" max="{{dur}}" oninput="updateTextInput(this.value);updateFrame(this,{{sizes | safe}});"
                     style="width: 30rem" value="1">
                   </div>
                   <br>
                   <div class="col">
 
                     <input id="range-label" class="range-label font-poppins w300" value="1" id="frame" name="frame"
-                    oninput="updateRange(this); keepRange(this.value,{{dur}});"
+                    oninput="updateRange(this); keepRange(this.value,{{dur}});updateFrame(this,{{sizes | safe}})"
                     style="background:transparent;border: 0;border-bottom: 1px solid white;width: 4rem;text-align: center;" >
                   </input>
 
@@ -76,7 +92,7 @@
                 <input class="card border-light bg-transparent font-poppins w200"
                 type="text" name="frame" placeholder="Select a {% if file %}frame (1 - {{dur}}){% else %}Moment (0:00 - {{dur}}){% endif %}" id="frame"
                 style="border: 0; border-bottom: solid 1px; width: 25rem;height: 3rem;font-size: 1.5rem;position: relative;bottom:0rem;text-align: center;
-                {% if not file%} top:1.5rem {% endif %}">
+                top:1.5rem">
                 {% endif %}
               </div>
             
@@ -94,9 +110,11 @@
       <div class="col-4">
       </div>
   </div>
-    </form>
-        <p id="copyright" class="font-poppins w200 footer fixed-bottom" >Copyright &copy Tymon Jasiński 2022</p>
+</form>
+</body>
+<!-- <p id="copyright" class="font-poppins w200 footer" style="position: relative;bottom: 0.5rem;" >Copyright &copy Tymon Jasiński 2022</p> -->
+        
 
-    </body>
+    
 
 </html>

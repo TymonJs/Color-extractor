@@ -1,3 +1,6 @@
+html,body{
+    min-height: 100vh;
+}
 p{
     text-align: center;
     font-size: 1.5rem;
@@ -9,7 +12,7 @@ p{
     padding-top: 0.5rem;
 }
 #title{
-    margin-bottom:3rem;
+    margin-bottom:2.3rem;
 }
 .container{
     text-align: center;
@@ -25,6 +28,8 @@ p{
 body {
     background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
     background-size: 400% 400%;
+    
+
     animation: gradient 15s ease infinite;
 }
 
@@ -95,8 +100,8 @@ input:-webkit-autofill:active {
     cursor: pointer;
 }
 .clr{
-    width:74px;
-    height:74px;
+    width:69px;
+    height:69px;
     float: left;
     margin: 0;
 }
@@ -106,7 +111,7 @@ input:-webkit-autofill:active {
    color: white;
    text-align: center;
    background-color: rgba(36, 35, 35, 0.767);
-   width: 70px;
+   width: 69px;
    height: 30px;
    top: 20px;
    margin: auto 0;
@@ -114,32 +119,42 @@ input:-webkit-autofill:active {
    opacity: 0;
    position: absolute;
    transition: opacity .3s, visibility .3s;
-   
 }
 
 .img-extract{
     border-radius: 50px;
     max-width: 50rem;
     min-width: 20rem;
-    max-height: 27rem;
+    max-height: 25rem;
     display:block;
     margin: 0 auto;
 }
-
-.gif, .video{
+.video{
     margin: 0 auto;
     min-width: 30rem;
     min-height: 25rem;
     max-width: 45rem;
-    max-height: 26rem;
+    max-height: 26rem; 
     border-radius: 50px;
     display: block;
     margin: 0 auto;
 }
-html,body{
-    min-height: 100vh;
-  }
-
+.gif{
+    margin: 0 auto;
+    /* min-width: 30rem;
+    min-height: 25rem;
+    max-width: 45rem;
+    max-height: 26rem;   */
+    border-radius: 70px;
+    background-repeat: no-repeat;
+    /* rgb(41, 40, 38); */
+    background-color:  rgba(235, 214, 214, 0.418);
+    border: 2px solid white;
+    /* background-size: cover; */
+    /* background-clip: content-box; */
+    display: block;
+    margin: 0 auto;
+}
 
 .clr:hover .clr-label{
     visibility: visible;
@@ -171,4 +186,12 @@ margin: 0em auto 1.4rem
     position: relative;
     bottom: 0.6rem;
     font-size: 1.2rem;
+}
+
+.gif{
+    transform: translate3d(0,0,1px); 
+    backface-visibility: hidden;
+}
+.clr-tooltip .clr:hover{
+    opacity: 1;
 }

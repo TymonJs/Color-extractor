@@ -12,6 +12,7 @@ from numpy import array, uint8
 from time import sleep
 from random import randint
 import cv2
+from json import dumps
 
 PIXEL_DISTANCE = 25
 COLOR_DISTANCE = 100
@@ -94,6 +95,38 @@ def rgb_to_hex(clrs):
             hexCode+="0"
         hexCode+= (str(val).replace("0x","").upper())
     return hexCode
+
+def make_spritesheet(gifpath:str,mastername):
+    gif = Image.open(gifpath)
+
+    width = gif.width
+    height = gif.height
+
+    frameCount = gif.n_frames-1
+
+    master_width = width * frameCount
+    master_height = height
+
+    master = Image.new(
+        mode  = 'RGBA',
+        size  = (master_width, master_height),
+        color = (0, 0, 0, 0) 
+    )
+    loc = 0
+    for i in range(frameCount):
+        
+        try:
+            gif.seek(i)
+            if i == 0:
+                jpgPath = gifpath.rstrip('gif')+"png.jpg"
+                gif.convert('RGB').save(jpgPath)
+        except EOFError:
+            master = master.resize((master_width-width,master_height))
+            break
+        master.paste(gif,(loc,0))
+        loc+=width
+    afterReturnRemove(jpgPath,45)
+    return master,master.width,master.height
 
 @app.errorhandler(413)
 def largefile_error(e):
@@ -300,22 +333,42 @@ def gif():
     except FileNotFoundError:
         flash("Session has expired")
         return redirect(url_for('home'))
-    Thread(target=afterReturnRemove(path,120)).start()
-    return render_template('frame-select.html',form=form,file=file,path=path)
+
+    dur = file.n_frames-1
+    prev_size = {'w':file.width,"h":file.height}
+    file.close()
+
+    sSheetPath = UPLOAD_FOLDER+filename.rsplit('.',1)[0]+'.png'
+    data =  make_spritesheet(path,sSheetPath)
+    sSheet = data[0]
+    # after_size = {"aw":data[1],"ah":data[2]}
+    sSheet.save(sSheetPath)
+    sSheet.close()
+
+    # Thread(target=afterReturnRemove(path,45)).start()
+    # Thread(target=afterReturnRemove(sSheetPath,45)).start()
+    afterReturnRemove(path,45)
+    afterReturnRemove(sSheetPath,45)
+
+    sizes = prev_size #|after_size
+    return render_template('frame-select.html',form=form,file=sSheet,path=sSheetPath,dur=dur,sizes=sizes)
 
 @app.route('/gif-validate',methods=["POST"])
 def gifValidate():
     form = GifForm()
-    path = request.args.get("path")
-    file = Image.open(path)
-
+    path = request.args.get("path").rsplit('.',1)[0] + '.gif'
+    try:
+        file = Image.open(path)
+    except FileNotFoundError:
+        flash("Session has expired")
+        return redirect(url_for('home'))
     frame = form.frame.data
-
     if frame or frame == 0:
         try:
             frame=int(frame)-1  
         except ValueError:
-            frame = 1
+            flash("Frame doesn't exist")
+            return redirect(url_for('gif',filename=path.replace(UPLOAD_FOLDER,'')))
 
     if (not frame or frame < 1) and file.n_frames>1:
         frame = 1
@@ -355,11 +408,11 @@ def gifColors():
         try:
             return render_template('index.html',path=path,clrs=hexs)
         except TypeError:
-            abort(403)
+            flash("Session has expired")
+            return redirect(url_for('home'))
             
     else:
         abort(403)
 
 if __name__ == "__main__":
     app.run(debug=True)
-

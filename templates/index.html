@@ -1,6 +1,6 @@
 {% include "header.html" %}
-<div>
-  <h1 style="font-size: 6rem;color: white;" class="text-center font-poppins w100" id="title">Color extractor</h1>
+<div style="zoom:1.1">
+  <h1 style="font-size: 6.4rem;color: white;" class="text-center font-poppins w100" id="title">Color extractor</h1>
   {% with messages = get_flashed_messages() %}
     {% if messages %}
       {% for message in messages %}
@@ -9,7 +9,7 @@
     {% endif %}
   {% endwith %}
   {% if not path %}
-  <div style="display:grid;place-items: center">
+  <div style="display:grid;place-items: center;">
     <form action="{{ url_for('home') }}" method="post" enctype="multipart/form-data">
       <input type="file" name="color" id="color" class="btn font-poppins w300" style="color: white;">
 
@@ -18,17 +18,20 @@
     <p class="font-poppins w300" style="font-size: 1.3rem;">(This may take a few seconds)</p>
   </div>
   {% else %}
-  <div class="card border-light bg-transparent" style="width: 60rem;margin:0 auto;border-radius: 30px">
+  <div class="card border-light bg-transparent" style="width: 60rem;margin:0 auto;border-radius: 30px;zoom: 1.1;">
     <div class="card-body">
     <img class="img-extract" src="{{ path }}" >
     </div>
     {% if clrs %}
     <div class="clr-container" >
         {% for clr in clrs %}
-        <div class="clr" style="background-color:{{clr}}">
-          <p class="font-poppins w500 clr-label text-center">{{clr}}</p>
+        <div class="clr" style="background-color:{{clr}};border:0" onclick='navigator.clipboard.writeText("{{clr}}");alert("Copied {{clr}}")'>
+          <p class="font-poppins w500 clr-label text-center" >{{clr}}</p>
         </div>
         {% endfor %}   
+        <!-- <button type="button" >
+          Tooltip on bottom
+        </button> -->
     </div>
     {% endif %}
   </div>
