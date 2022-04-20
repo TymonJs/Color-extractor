@@ -31,3 +31,15 @@ function updateFrame(frame,sizes){
       document.getElementById('gif').style.backgroundPosition = "0px 0px";
     }
 }
+function myAlert(message){
+  Swal(meesage)
+}
+function myAlert(message){
+  Swal.fire({
+  position: 'top-end',
+  icon: 'success',
+  title: message,
+  showConfirmButton: false,
+  timer: 1500
+})
+}

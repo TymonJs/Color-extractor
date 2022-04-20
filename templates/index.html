@@ -25,7 +25,7 @@
     {% if clrs %}
     <div class="clr-container" >
         {% for clr in clrs %}
-        <div class="clr" style="background-color:{{clr}};border:0" onclick='navigator.clipboard.writeText("{{clr}}");alert("Copied {{clr}}")'>
+        <div class="clr" style="background-color:{{clr}};border:0" onclick='navigator.clipboard.writeText("{{clr}}");myAlert("Copied {{clr}} to clipboard")'>
           <p class="font-poppins w500 clr-label text-center" >{{clr}}</p>
         </div>
         {% endfor %}   

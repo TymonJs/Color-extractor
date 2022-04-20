@@ -149,7 +149,7 @@ input:-webkit-autofill:active {
     background-repeat: no-repeat;
     /* rgb(41, 40, 38); */
     background-color:  rgba(235, 214, 214, 0.418);
-    border: 2px solid white;
+    /* border: 2px solid white; */
     /* background-size: cover; */
     /* background-clip: content-box; */
     display: block;
