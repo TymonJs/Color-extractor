@@ -32,9 +32,6 @@ function updateFrame(frame,sizes){
     }
 }
 function myAlert(message){
-  Swal(meesage)
-}
-function myAlert(message){
   Swal.fire({
   position: 'top-end',
   icon: 'success',
