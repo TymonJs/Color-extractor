@@ -152,7 +152,7 @@ input:-webkit-autofill:active {
     /* background-size: cover; */
     /* background-clip: content-box; */
     display: block;
-    margin: 0 200px;
+    margin: 0 auto;
 }
 
 .clr:hover .clr-label{
