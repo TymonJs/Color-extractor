@@ -7,7 +7,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-    <link rel="stylesheet" href="{{ url_for('static',filename='styles.css') }}">
   <title>Color extractor</title>
 
 <link href="https://pagecdn.io/lib/easyfonts/fonts.css" rel="stylesheet" />
@@ -21,7 +20,8 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 <link rel="stylesheet" href="@sweetalert2/themes/dark/dark.css">
 <script src="sweetalert2/dist/sweetalert2.min.js"></script>
-
+<link rel="stylesheet" href="{{ url_for('static',filename='styles.css') }}">
+<link rel="stylesheet" href="/static/styles.css">
 </head>
 <body >
   <a class="card border-light bg-transparent font-poppins w200 searchbar"

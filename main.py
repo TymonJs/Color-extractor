@@ -34,7 +34,10 @@ Bootstrap(app)
 static = listdir("./static/")
 if "uploads" not in static:
     mkdir("./static/uploads")
-
+else:
+    for file in listdir(UPLOAD_FOLDER):
+        remove(UPLOAD_FOLDER + file)
+        
 def clr_distance(clr1,clr2):
     delta_r = clr1[0] - clr2[0]
     delta_g = clr1[1] - clr2[1]

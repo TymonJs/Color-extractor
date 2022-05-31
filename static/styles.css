@@ -30,7 +30,7 @@ body {
     background-size: 400% 400%;
     
 
-    animation: gradient 15s ease infinite;
+    /* animation: gradient 15s ease infinite; */
 }
 
 @keyframes gradient {
@@ -140,7 +140,6 @@ input:-webkit-autofill:active {
     margin: 0 auto;
 }
 .gif{
-    margin: 0 auto;
     /* min-width: 30rem;
     min-height: 25rem;
     max-width: 45rem;
@@ -153,7 +152,7 @@ input:-webkit-autofill:active {
     /* background-size: cover; */
     /* background-clip: content-box; */
     display: block;
-    margin: 0 auto;
+    margin: 0 200px;
 }
 
 .clr:hover .clr-label{
