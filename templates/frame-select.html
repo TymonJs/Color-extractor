@@ -1,15 +1,15 @@
 {% include 'header.html' %}
 <div class="container" style="zoom: 1.1;margin-left: auto;margin-right: auto;">
-    <h1 style="font-size: 5rem;padding-bottom: 0.3rem;" class="font-poppins w100" id="todo">Select Frame</h1>
+    <h1 style="font-size: 5rem;padding-bottom: 0.3rem;font-family:'Poppins';font-weight:100"  id="todo">Select Frame</h1>
     <div class="card border-light bg-transparent" style="object-fit: contain;border-radius: 30px;margin: 0 auto;
     {% if file %} width: fit-content {% else %} height:37rem;zoom:1.1{%endif%}">
         <div class="card-body">
           
             {% with messages = get_flashed_messages() %}
               {% if messages %}
-              <h2 class="card-title font-poppins w100 warning" >{{messages[0]}}</h2>
+              <h2 class="card-title warning" style="font-family:'Poppins';font-weight:100" >{{messages[0]}}</h2>
               {% else %}
-              <h2 class="card-title font-poppins w200" style="margin-bottom: 0.7rem">Form</h2>
+              <h2 class="card-title" style="margin-bottom: 0.7rem;font-family:'Poppins';font-weight:200">Form</h2>
               {% endif %}
             {% endwith %}  
             {% if file %}        
@@ -32,7 +32,7 @@
                   </div>
                   
 
-
+          
                   <script type="text/javascript">
                     var proportion = 430/{{sizes['h']}};
                     
@@ -43,7 +43,7 @@
 
                   <span style="background-color: rgba(36, 35, 35, 0.767);position: relative;height: 2rem;bottom:1.5rem;
                   font-size: 1.6rem;padding: 0 2rem;border-radius: 50px"
-                  class="font-poppins w500">
+                  style="font-family:'Poppins';font-weight:500">
                   {{dur}} frames
                   </span>
 
@@ -63,8 +63,8 @@
 
                 {% if file %}
               
-                <label class="form-label font-poppins w300" 
-                style="font-size: 1.7rem;margin-bottom: 0;position: relative;" >
+                <label class="form-label" 
+                style="font-size: 1.7rem;margin-bottom: 0;position: relative;font-family:'Poppins';font-weight:300" >
                 Select a frame
                 </label>
                 <div class="row" >
@@ -78,9 +78,9 @@
                   <br>
                   <div class="col">
 
-                    <input id="range-label" class="range-label font-poppins w300" value="1" id="frame" name="frame"
+                    <input id="range-label" class="range-label" value="1" id="frame" name="frame"
                     oninput="updateRange(this); keepRange(this.value,{{dur}});updateFrame(this,{{sizes | safe}})"
-                    style="background:transparent;border: 0;border-bottom: 1px solid white;width: 4rem;text-align: center;" >
+                    style="background:transparent;border: 0;border-bottom: 1px solid white;width: 4rem;text-align: center;font-family:'Poppins';font-weight:300" >
                   </input>
 
                   </div>
@@ -89,10 +89,10 @@
 
                 
                 {% else %}
-                <input class="card border-light bg-transparent font-poppins w200"
+                <input class="card border-light bg-transparent"
                 type="text" name="frame" placeholder="Select a {% if file %}frame (1 - {{dur}}){% else %}Moment (0:00 - {{dur}}){% endif %}" id="frame"
                 style="border: 0; border-bottom: solid 1px; width: 25rem;height: 3rem;font-size: 1.5rem;position: relative;bottom:0rem;text-align: center;
-                top:1.5rem">
+                top:1.5rem;font-family:'Poppins';font-weight:200">
                 {% endif %}
               </div>
             
@@ -104,15 +104,16 @@
       <div class="col-4">
       </div>
       <div class="col-4">
-          <button class="btn btn-warning btn-block font-poppins w700"
-          style="margin-top: 0.6rem;border-radius: 10px;font-size: 1.2rem;position: relative;bottom: 1.75rem;" type="submit">Select</button>
+          <button class="btn btn-warning btn-block"
+          style="margin-top: 0.6rem;border-radius: 10px;font-size: 1.2rem;position: relative;bottom: 1.75rem;font-family:'Poppins';font-weight:700" type="submit">Select</button>
       </div>
       <div class="col-4">
       </div>
   </div>
 </form>
+</div>
 </body>
-<!-- <p id="copyright" class="font-poppins w200 footer" style="position: relative;bottom: 0rem;" >Copyright &copy Tymon Jasiński 2022</p> -->
+<!-- <p id="copyright" class="footer" style="position: relative;bottom: 0rem;font-family:'Poppins';font-weight:200" >Copyright &copy Tymon Jasiński 2022</p> -->
         
 
     

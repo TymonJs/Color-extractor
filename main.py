@@ -1,6 +1,7 @@
 from collections import Counter
 from sys import maxsize
 from threading import Thread
+import PIL
 from cv2 import VideoCapture
 from flask import Flask, flash, render_template, redirect, url_for,request,abort,after_this_request,jsonify
 from flask_bootstrap import Bootstrap
@@ -26,7 +27,7 @@ ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png','gif'} | VIDEO_EXTENSIONS
 UPLOAD_FOLDER = './static/uploads/'
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = environ.get('secret_key')
+app.config['SECRET_KEY'] = '312ASjfajpsSGAifa123t32788' #environ.get('secret_key')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE * 1024 * 1024
 
@@ -99,7 +100,7 @@ def rgb_to_hex(clrs):
         hexCode+= (str(val).replace("0x","").upper())
     return hexCode
 
-def make_spritesheet(gifpath:str,mastername):
+def make_spritesheet(gifpath:str,mastername) :
     gif = Image.open(gifpath)
 
     width = gif.width
@@ -133,7 +134,7 @@ def make_spritesheet(gifpath:str,mastername):
 
 @app.errorhandler(413)
 def largefile_error(e):
-    flash(F'File too large. Max file size is {MAX_FILE_SIZE}MB')
+    flash(F'File is too large. Max file size is {MAX_FILE_SIZE}MB')
     return redirect(url_for('home'))
     # return jsonify(
     # {

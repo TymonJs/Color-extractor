@@ -1,6 +1,6 @@
 {% include "header.html" %}
 <div style="zoom:1.1;height: 60vh;">
-  <h1 style="font-size: 6.4rem;color: white;" class="text-center font-poppins w100" id="title">Color extractor</h1>
+  <h1 style="font-size: 6.4rem;color: white;font-family:'Poppins';font-weight:100" class="text-center" id="title">Color extractor</h1>
   {% if not path%}
   <div style="position:relative;top: 100px;">
     {% endif %}
@@ -9,16 +9,16 @@
   {% with messages = get_flashed_messages() %}
     {% if messages %}
       {% for message in messages %}
-          <p class="font-poppins w300" style="color:white;text-align:center" >{{message}}</p>
+          <p  style="color:white;text-align:center;;font-family:'Poppins';font-weight:300" >{{message}}</p>
       {% endfor %}
     {% endif %}
   {% endwith %}
   {% if not path %}
   <div style="display:grid;place-items: center;">
     <form action="{{ url_for('home') }}" method="post" enctype="multipart/form-data">
-      <input type="file" name="color" id="color" class="btn font-poppins w300" style="transform: scale(1.1);color: white;">
+      <input type="file" name="color" id="color" class="btn" style="transform: scale(1.1);color: white;font-family:'Poppins';font-weight:300">
 
-      <button class="btn font-poppins w300" type="submit" style="display: block;margin: 1rem auto;color: white;border: 2px solid #6c5ce7; transform: scale(1.1);">Send</button>
+      <button class="btn" type="submit" style="display: block;margin: 1rem auto;color: white;border: 2px solid #6c5ce7; transform: scale(1.1);font-family:'Poppins';font-weight:300">Send</button>
     </form>
     <!-- <p class="font-poppins w300" style="font-size: 1.3rem;">(This may take a few seconds)</p> -->
   </div>
@@ -31,7 +31,7 @@
     <div class="clr-container" >
         {% for clr in clrs %}
         <div class="clr" style="background-color:{{clr}};border:0" onclick='navigator.clipboard.writeText("{{clr}}");myAlert("Copied {{clr}} to clipboard")'>
-          <p class="font-poppins w500 clr-label text-center" >{{clr}}</p>
+          <p class="clr-label text-center" style="font-family:'Poppins';font-weight:500" >{{clr}}</p>
         </div>
         {% endfor %}   
         <!-- <button type="button" >
@@ -44,5 +44,5 @@
 </div>
 </div>
 </div>
-
+</div>
 {% include "footer.html" %}

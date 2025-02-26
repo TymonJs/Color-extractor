@@ -162,4 +162,6 @@ colorgram-way.py
 color-extraction.py
 test.py
 *test*
+.vscode
+
 # End of https://www.toptal.com/developers/gitignore/api/flask
