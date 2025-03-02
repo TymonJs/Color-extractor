@@ -1,5 +1,5 @@
 Website based on Python for extracting dominant colors of different media (images/gifs/videos).
-Tech stack:
+## Tech Stack:
  - Flask
  - jinja
  - Pillow
@@ -7,6 +7,6 @@ Tech stack:
  - Boostrap
  - numpy
    
-To start the website locally: 
+## Getting Started
  - Run ```python main.py``` to start the flask server
  - Head to the localhost server given in the console.
