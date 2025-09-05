@@ -27,7 +27,7 @@ ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png','gif'} | VIDEO_EXTENSIONS
 UPLOAD_FOLDER = './static/uploads/'
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '312ASjfajpsSGAifa123t32788' #environ.get('secret_key')
+app.config['SECRET_KEY'] = environ.get('secret_key')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE * 1024 * 1024
 
